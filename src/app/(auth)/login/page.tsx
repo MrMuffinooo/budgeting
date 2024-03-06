@@ -1,11 +1,14 @@
 "use client";
 
+import styles from "./page.module.css";
 import { FormEvent } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Switch from "@mui/material/Switch";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { useState } from "react";
+import { isValidEmail, isValidPassword } from "@/utils/matches";
+import { useRouter } from "next/navigation";
 
 export default function Login({}) {
   const [emailError, setEmailError] = useState(" ");
@@ -14,23 +17,41 @@ export default function Login({}) {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
+  const router = useRouter();
 
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+  const validate = () => {
+    if (!isValidEmail(email)) {
+      setEmailError("Please enter a valid email");
+    } else {
+      setEmailError(" ");
+    }
+    if (isRegistering && !isValidPassword(password)) {
+      setPasswordError("Password is too weak");
+    } else {
+      setPasswordError(" ");
+    }
+  };
+
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    setIsLoading(true);
     event.preventDefault();
-    alert("OK");
-    const formData = new FormData(event.currentTarget);
-    const response = await fetch("/api/submit", {
-      method: "POST",
-      body: formData,
-    });
-
-    // Handle response if necessary
-    const data = await response.json();
-    // ...
-  }
+    validate();
+    if (passwordError === " " && emailError === " ") {
+      const response = await fetch("/api/login", {
+        method: "POST",
+      });
+      console.log(response);
+      if (response.ok) {
+        router.push("/dashboard");
+      } else {
+        setPasswordError("Email or password is incorrect");
+      }
+    }
+    setIsLoading(false);
+  };
 
   return (
-    <main>
+    <main className={styles.main}>
       <div>
         <form onSubmit={onSubmit}>
           <TextField
@@ -44,7 +65,6 @@ export default function Login({}) {
             variant="outlined"
             required
             fullWidth
-            type="email"
             helperText={emailError}
           />
           <TextField
