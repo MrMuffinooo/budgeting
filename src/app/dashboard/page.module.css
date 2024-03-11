@@ -1,0 +1,26 @@
+.main {
+  padding: 6rem;
+  min-height: 100vh;
+}
+
+.date_picker_left > div {
+  border-radius: 999em 0 0 999em;
+}
+
+.date_picker_right > div {
+  border-radius: 0 999em 999em 0;
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+  .content {
+    padding: 4rem;
+  }
+}
+
+/* Tablet and Smaller Desktop */
+@media (min-width: 701px) and (max-width: 1120px) {
+  .grid {
+    grid-template-columns: repeat(2, 50%);
+  }
+}

@@ -30,13 +30,14 @@ export default function Login({}) {
     } else {
       setPasswordError(" ");
     }
+    return passwordError === " " && emailError === " ";
   };
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     setIsLoading(true);
     event.preventDefault();
-    validate();
-    if (passwordError === " " && emailError === " ") {
+    const isValid = validate();
+    if (isValid) {
       const response = await fetch("/api/login", {
         method: "POST",
       });
