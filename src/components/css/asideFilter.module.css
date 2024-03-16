@@ -1,0 +1,29 @@
+.aside {
+  width: max-content;
+  background-color: grey;
+  position: fixed;
+  top: 50%;
+  left: 15px;
+  transform: translate(0, -50%);
+  border-radius: 15px;
+}
+
+.aside > div {
+  padding: 20px;
+}
+
+.aside > div:first-of-type {
+  border-radius: 15px 15px 0 0;
+}
+.aside > div:last-of-type {
+  border-radius: 0 0 15px 15px;
+}
+
+.aside > div:hover {
+  cursor: pointer;
+  background-color: red;
+}
+
+.aside .asideIcon {
+  font-size: 35px;
+}
