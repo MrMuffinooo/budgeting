@@ -2,7 +2,7 @@
 
 import "dayjs/locale/pl";
 import dayjs from "dayjs";
-import styles from "./page.module.css";
+import styles from "./page.module.scss";
 import Avatar from "@mui/material/Avatar";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";

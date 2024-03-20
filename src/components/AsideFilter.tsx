@@ -1,6 +1,6 @@
 import React from "react";
 
-import styles from "./css/asideFilter.module.css";
+import styles from "./css/asideFilter.module.scss";
 import TodayIcon from "@mui/icons-material/Today";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";

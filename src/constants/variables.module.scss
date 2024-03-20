@@ -1,0 +1,28 @@
+$primary-color: #4caf50;
+$primary-color-dark: #3d8b40;
+
+$secondary-color: #77a6b6;
+$secondary-color-dark: #548a9c;
+
+$urgent-color: #a31621;
+$urgent-color-dark: #81121b;
+
+$highlight-color: #ffc145;
+$highlight-color-dark: #ffac06;
+
+$dark-color: #000f08;
+
+:export {
+  primaryColor: $primary-color;
+  primaryColorDark: $primary-color-dark;
+  secondaryColor: $secondary-color;
+  secondaryColorDark: $secondary-color-dark;
+
+  urgentColor: $urgent-color;
+  urgentColorDark: $urgent-color-dark;
+
+  highlightColor: $highlight-color;
+  highlightColorDark: $highlight-color-dark;
+
+  darkColor: $dark-color;
+}
