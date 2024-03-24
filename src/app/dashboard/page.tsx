@@ -9,6 +9,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import AsideFilter from "@/components/AsideFilter";
+import AddFAB from "@/components/AddFAB";
 export default function Dashboard() {
   return (
     <main className={styles.main}>
@@ -40,6 +41,7 @@ export default function Dashboard() {
       </header>
       <article></article>
       <AsideFilter />
+      <AddFAB />
     </main>
   );
 }

@@ -1,0 +1,12 @@
+@use "../../constants/variables.module.scss" as v;
+
+.add {
+  width: fit-content;
+  position: fixed;
+  right: 50px;
+  bottom: 50px;
+
+  & button {
+    background-color: v.$primary-color;
+  }
+}

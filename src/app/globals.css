@@ -20,7 +20,16 @@ body {
   overflow-x: hidden;
 }
 
-body {
+@media (max-width: 700px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 701px) {
+  html {
+    font-size: 32px;
+  }
 }
 
 a {
