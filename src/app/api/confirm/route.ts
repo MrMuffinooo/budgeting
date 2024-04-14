@@ -1,6 +1,6 @@
 import {
   CognitoIdentityProviderClient,
-  SignUpCommand,
+  ConfirmSignUpCommand,
   CognitoIdentityProviderServiceException,
 } from "@aws-sdk/client-cognito-identity-provider";
 import { NextResponse } from "next/server";
@@ -11,28 +11,31 @@ const cognitoClient = new CognitoIdentityProviderClient({
 
 export async function POST(request: Request) {
   const req = await request.json();
-  console.log("Registering", req);
+  console.log("Confirming", req);
   const input = {
     ClientId: process.env.AWS_COGNITO_CLIENT_ID,
     Username: req.username,
-    Password: req.password,
+    ConfirmationCode: req.code,
   };
   console.log("cognito:");
   try {
-    const response = await cognitoClient.send(new SignUpCommand(input));
+    const response = await cognitoClient.send(new ConfirmSignUpCommand(input));
     console.log(response);
     return NextResponse.json(
-      { message: "Registered", error: false, data: response },
+      { message: "Confirmed", error: false, data: response },
       { status: 200 }
     );
   } catch (e) {
     if (e instanceof CognitoIdentityProviderServiceException) {
       return NextResponse.json(
-        { message: e.message, error: true },
+        { message: e.message, error: true, data: e },
         { status: e.$response?.statusCode ?? 500 }
       );
     } else {
-      return NextResponse.json({ message: e, error: true }, { status: 500 });
+      return NextResponse.json(
+        { message: e, error: true, data: e },
+        { status: 500 }
+      );
     }
   }
 }
