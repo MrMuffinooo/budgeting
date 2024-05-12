@@ -6,7 +6,7 @@ import {
 import { NextResponse } from "next/server";
 
 const cognitoClient = new CognitoIdentityProviderClient({
-  region: "us-east-1",
+  region: process.env.AWS_COGNITO_REGION,
 });
 
 export async function POST(request: Request) {

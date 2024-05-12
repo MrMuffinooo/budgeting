@@ -14,6 +14,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
+import DialogActions from "@mui/material/DialogActions";
 
 export default function Login({}) {
   const router = useRouter();
@@ -22,10 +23,8 @@ export default function Login({}) {
   const [key, setKey] = useState(1);
   const [emailError, setEmailError] = useState(" ");
   const [passwordError, setPasswordError] = useState(" ");
-  const [email, setEmail] = useState(process.env.TEST_EMAIL ?? "email"); //TODO
-  const [password, setPassword] = useState(
-    process.env.TEST_PASSWORD ?? "password"
-  ); //TODO
+  const [email, setEmail] = useState(process.env.TEST_EMAIL); //TODO
+  const [password, setPassword] = useState(process.env.TEST_PASSWORD); //TODO
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const [code, setCode] = useState("");
@@ -69,10 +68,16 @@ export default function Login({}) {
   async function handleLogin() {
     const response = await fetch("/api/login", {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: email,
+        password: password,
+      }),
     });
     console.log(response);
     if (response.ok) {
-      router.push("/dashboard");
+      //router.push("/dashboard");
+      console.log("SUCCESS");
     } else {
       setPasswordError("Email or password is incorrect");
     }
@@ -168,9 +173,10 @@ export default function Login({}) {
           >
             {isLoading ? "Loading..." : isRegistering ? "Register" : "Login"}
           </Button>
+          <Button onClick={() => setIsModealOpen(true)}>Verify</Button>
         </form>
       </div>
-      <Dialog open={isModealOpen} onClose={() => setIsModealOpen(false)}>
+      <Dialog open={isModealOpen}>
         <DialogTitle>Verify email</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -193,6 +199,12 @@ export default function Login({}) {
             onComplete={(a) => handleConfirmationCode(a)}
           />
           <DialogContentText>{verificationError}</DialogContentText>
+          <DialogActions>
+            <Button onClick={() => setIsModealOpen(false)}>
+              Send new code
+            </Button>
+            <Button onClick={() => setIsModealOpen(false)}>Cancel</Button>
+          </DialogActions>
         </DialogContent>
       </Dialog>
     </main>
