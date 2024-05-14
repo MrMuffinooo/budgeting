@@ -35,12 +35,14 @@ export async function POST(request: Request) {
       cookies().set("AccessToken", response.AuthenticationResult.AccessToken, {
         expires:
           Date.now() + (response.AuthenticationResult.ExpiresIn ?? 600) * 1000, //10 min min
+        sameSite: "strict",
       });
       cookies().set(
         "RefreshToken",
         response.AuthenticationResult.RefreshToken,
         {
           expires: Date.now() + 60 * 60 * 24 * 30 * 1000, // 1 month
+          sameSite: "strict",
         }
       );
 

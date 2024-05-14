@@ -4,7 +4,54 @@ import { cookies } from "next/headers";
 import {
   CognitoIdentityProviderClient,
   GetUserCommand,
+  InitiateAuthCommand,
+  InitiateAuthCommandInput,
 } from "@aws-sdk/client-cognito-identity-provider";
+
+const cognitoClient = new CognitoIdentityProviderClient({
+  region: process.env.AWS_COGNITO_REGION,
+});
+
+async function isAccessTokenValid(token: string) {
+  const input = {
+    AccessToken: token,
+  };
+  try {
+    const response = await cognitoClient.send(new GetUserCommand(input));
+    return response.Username ? true : false;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function authRefreshToken(token: string) {
+  const input: InitiateAuthCommandInput = {
+    ClientId: process.env.AWS_COGNITO_CLIENT_ID ?? "ERROR",
+    AuthFlow: "REFRESH_TOKEN",
+    AuthParameters: {
+      REFRESH_TOKEN: token,
+    },
+  };
+  const response = await cognitoClient.send(new InitiateAuthCommand(input));
+  if (
+    response.AuthenticationResult?.AccessToken &&
+    response.AuthenticationResult?.ExpiresIn
+  ) {
+    return {
+      accToken: response.AuthenticationResult.AccessToken,
+      expiresIn: response.AuthenticationResult.ExpiresIn,
+    };
+  } else {
+    throw new Error("Authentication with refresh token failed");
+  }
+}
+
+function authenticatedRedirect(request: NextRequest) {
+  if (request.nextUrl.pathname.startsWith("/login")) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+  return NextResponse.next();
+}
 
 export async function middleware(request: NextRequest) {
   if (
@@ -15,37 +62,45 @@ export async function middleware(request: NextRequest) {
   ) {
     return NextResponse.next();
   }
+
   console.log(request.nextUrl.pathname);
-  const cognitoClient = new CognitoIdentityProviderClient({
-    region: process.env.AWS_COGNITO_REGION,
-  });
 
   const cookieStore = cookies();
+  const accessToken = cookieStore.get("AccessToken")?.value;
+  const refreshToken = cookieStore.get("RefreshToken")?.value;
 
-  if (cookieStore.has("AccessToken")) {
-    const input = {
-      AccessToken: cookieStore.get("AccessToken")?.value,
-    };
-    try {
-      const response = await cognitoClient.send(new GetUserCommand(input));
-      if (response.Username) {
-        if (request.nextUrl.pathname.startsWith("/login")) {
-          return NextResponse.redirect(new URL("/dashboard", request.url));
-        }
-        return NextResponse.next();
-      } else {
-        throw new Error("invalid access token");
-      }
-    } catch (e) {
-      const res = NextResponse.redirect(new URL("/login", request.url));
-      res.cookies.delete("AccessToken");
-      return res;
-    }
-  }
-  if (request.nextUrl.pathname.startsWith("/login")) {
+  if (!accessToken && request.nextUrl.pathname.startsWith("/login")) {
     return NextResponse.next();
   }
-  return NextResponse.redirect(new URL("/login", request.url));
+
+  if (accessToken && (await isAccessTokenValid(accessToken))) {
+    return authenticatedRedirect(request);
+  }
+  console.log("access token failed");
+  if (refreshToken) {
+    console.log("refresh token found");
+    try {
+      const auth = await authRefreshToken(refreshToken);
+
+      console.log("here");
+      const res = authenticatedRedirect(request);
+      res.cookies.set("AccessToken", auth.accToken, {
+        expires: Date.now() + (auth.expiresIn ?? 600) * 1000, //10 min min
+        sameSite: "strict",
+      });
+      return res;
+    } catch (e) {
+      console.log(e);
+      console.log("refresh token failed");
+    }
+  }
+  console.log("refresh token not found");
+  const res = request.nextUrl.pathname.startsWith("/login")
+    ? NextResponse.next()
+    : NextResponse.redirect(new URL("/login", request.url));
+  res.cookies.delete("AccessToken");
+  res.cookies.delete("RefreshToken");
+  return res;
 }
 
 export const config = {

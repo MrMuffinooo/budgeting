@@ -26,8 +26,8 @@ export default function Login({}) {
   const [key, setKey] = useState(1);
   const [emailError, setEmailError] = useState(" ");
   const [passwordError, setPasswordError] = useState(" ");
-  const [email, setEmail] = useState(""); //TODO
-  const [password, setPassword] = useState(""); //TODO
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const [code, setCode] = useState("");
@@ -96,12 +96,11 @@ export default function Login({}) {
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     setIsLoading(true);
     event.preventDefault();
-    const isValid = true; //TODO validate();
-    if (isValid) {
-      if (!isRegistering) {
-        await handleLogin();
-      } else {
+    if (validate()) {
+      if (isRegistering) {
         await handleRegister();
+      } else {
+        await handleLogin();
       }
     }
     setIsLoading(false);
