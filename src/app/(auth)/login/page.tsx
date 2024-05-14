@@ -1,20 +1,23 @@
 "use client";
 
 import styles from "./page.module.scss";
-import { FormEvent, useRef } from "react";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import Switch from "@mui/material/Switch";
-import FormControlLabel from "@mui/material/FormControlLabel";
+import { FormEvent, useEffect, useRef } from "react";
+import {
+  Button,
+  Switch,
+  FormControlLabel,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  TextField,
+} from "@mui/material";
 import { useState } from "react";
 import { isValidEmail, isValidPassword } from "@/utils/matches";
 import { useRouter } from "next/navigation";
 import { MuiOtpInput } from "mui-one-time-password-input";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogActions from "@mui/material/DialogActions";
+import { NoSsr } from "@mui/base/NoSsr"; //handles classname missmatch warning
 
 export default function Login({}) {
   const router = useRouter();
@@ -23,14 +26,21 @@ export default function Login({}) {
   const [key, setKey] = useState(1);
   const [emailError, setEmailError] = useState(" ");
   const [passwordError, setPasswordError] = useState(" ");
-  const [email, setEmail] = useState(process.env.TEST_EMAIL); //TODO
-  const [password, setPassword] = useState(process.env.TEST_PASSWORD); //TODO
+  const [email, setEmail] = useState(""); //TODO
+  const [password, setPassword] = useState(""); //TODO
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const [code, setCode] = useState("");
   const [isModealOpen, setIsModealOpen] = useState(false);
   const [verificationError, setVerificationError] = useState("");
   const [isVerificationLoading, setIsVerificationLoading] = useState(false);
+
+  useEffect(() => {
+    if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
+      setEmail(process.env.NEXT_PUBLIC_TEST_EMAIL ?? "");
+      setPassword(process.env.NEXT_PUBLIC_TEST_PASSWORD ?? "");
+    }
+  }, []);
 
   const validate = () => {
     if (!isValidEmail(email)) {
@@ -76,7 +86,7 @@ export default function Login({}) {
     });
     console.log(response);
     if (response.ok) {
-      //router.push("/dashboard");
+      router.push("/dashboard");
       console.log("SUCCESS");
     } else {
       setPasswordError("Email or password is incorrect");
@@ -124,57 +134,59 @@ export default function Login({}) {
   return (
     <main className={styles.main}>
       <div>
-        <form onSubmit={onSubmit}>
-          <TextField
-            value={email}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setEmail(event.target.value);
-            }}
-            error={emailError !== " "}
-            id="login-input"
-            label="Login"
-            variant="outlined"
-            required
-            fullWidth
-            helperText={emailError}
-          />
-          <TextField
-            value={password}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setPassword(event.target.value);
-            }}
-            error={passwordError !== " "}
-            id="password-input"
-            label="Password"
-            variant="outlined"
-            required
-            type="password"
-            fullWidth
-            helperText={passwordError}
-          />
+        <NoSsr>
+          <form onSubmit={onSubmit}>
+            <TextField
+              value={email}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setEmail(event.target.value);
+              }}
+              error={emailError !== " "}
+              id="login-input"
+              label="Login"
+              variant="outlined"
+              required
+              fullWidth
+              helperText={emailError}
+            />
+            <TextField
+              value={password}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setPassword(event.target.value);
+              }}
+              error={passwordError !== " "}
+              id="password-input"
+              label="Password"
+              variant="outlined"
+              required
+              type="password"
+              fullWidth
+              helperText={passwordError}
+            />
 
-          <FormControlLabel
-            control={
-              <Switch
-                checked={isRegistering}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  setIsRegistering(event.target.checked);
-                }}
-              />
-            }
-            label="Registration"
-            labelPlacement="end"
-          />
-          <Button
-            variant="contained"
-            type="submit"
-            size="large"
-            disabled={isLoading}
-          >
-            {isLoading ? "Loading..." : isRegistering ? "Register" : "Login"}
-          </Button>
-          <Button onClick={() => setIsModealOpen(true)}>Verify</Button>
-        </form>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={isRegistering}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    setIsRegistering(event.target.checked);
+                  }}
+                />
+              }
+              label="Registration"
+              labelPlacement="end"
+            />
+            <Button
+              variant="contained"
+              type="submit"
+              size="large"
+              disabled={isLoading}
+            >
+              {isLoading ? "Loading..." : isRegistering ? "Register" : "Login"}
+            </Button>
+            <Button onClick={() => setIsModealOpen(true)}>Verify</Button>
+          </form>
+        </NoSsr>
       </div>
       <Dialog open={isModealOpen}>
         <DialogTitle>Verify email</DialogTitle>
