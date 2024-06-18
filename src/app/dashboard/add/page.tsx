@@ -12,6 +12,8 @@ import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import Button from "@mui/material/Button";
 
+import ListedCategories from "@/components/ListedCategories";
+
 export default function AddExpence({}) {
   const [amount, setAmount] = useState(0);
   const [amountVisible, setAmountVisible] = useState("");
@@ -89,51 +91,65 @@ export default function AddExpence({}) {
           <p>Add expence</p>
         </div>
         <form onSubmit={onSubmit}>
-          <div>
-            <TextField
-              variant="standard"
-              InputProps={{
-                endAdornment: <InputAdornment position="end">$</InputAdornment>,
-              }}
-              autoFocus
-              error={amountHelperText ? true : false}
-              helperText={amountHelperText}
-              value={amountVisible}
-              onChange={(e) => validateAmount(e.target.value)}
-            />
-          </div>
-          <div>
-            <p>Category</p>
-          </div>
-          <div>
-            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pl">
-              <DatePicker
-                defaultValue={dayjs()}
-                slotProps={{
-                  field: { className: styles.date_picker },
+          <div className={styles.form}>
+            <div className={styles.amount_field_container}>
+              <TextField
+                variant="standard"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">$</InputAdornment>
+                  ),
                 }}
+                autoFocus
+                error={amountHelperText ? true : false}
+                helperText={amountHelperText}
+                value={amountVisible}
+                onChange={(e) => validateAmount(e.target.value)}
+                className={styles.amount_field}
               />
-            </LocalizationProvider>
-          </div>
-          <div>
-            <TextField
-              variant="outlined"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              multiline
-              fullWidth
-              label="Comment"
-            />
-          </div>
-          <div>
-            <Button
-              variant="contained"
-              type="submit"
-              size="large"
-              disabled={isLoading}
-            >
-              {isLoading ? "Loading..." : "Add"}
-            </Button>
+            </div>
+            <div>
+              <p>Category</p>
+              <div className={styles.icons_container}>
+                <ListedCategories />
+              </div>
+            </div>
+            <div>
+              <div>
+                <p>Date:</p>
+              </div>
+              <LocalizationProvider
+                dateAdapter={AdapterDayjs}
+                adapterLocale="pl"
+              >
+                <DatePicker
+                  defaultValue={dayjs()}
+                  slotProps={{
+                    field: { className: styles.date_picker },
+                  }}
+                />
+              </LocalizationProvider>
+            </div>
+            <div>
+              <TextField
+                variant="outlined"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                multiline
+                fullWidth
+                label="Comment"
+              />
+            </div>
+            <div>
+              <Button
+                variant="contained"
+                type="submit"
+                size="large"
+                disabled={isLoading}
+              >
+                {isLoading ? "Loading..." : "Add"}
+              </Button>
+            </div>
           </div>
         </form>
       </div>

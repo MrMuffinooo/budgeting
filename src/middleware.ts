@@ -94,7 +94,7 @@ export async function middleware(request: NextRequest) {
       console.log("refresh token failed");
     }
   }
-  console.log("refresh token not found");
+
   const res = request.nextUrl.pathname.startsWith("/login")
     ? NextResponse.next()
     : NextResponse.redirect(new URL("/login", request.url));
