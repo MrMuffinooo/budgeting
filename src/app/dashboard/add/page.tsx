@@ -111,7 +111,7 @@ export default function AddExpence({}) {
             <div>
               <p>Category</p>
               <div className={styles.icons_container}>
-                <ListedCategories />
+                <ListedCategories isEdit />
               </div>
             </div>
             <div>
