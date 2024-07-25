@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { cookies } from "next/headers";
+import { isAccessTokenValid } from "@/utils/isAccessTokenValid";
 import {
   CognitoIdentityProviderClient,
-  GetUserCommand,
   InitiateAuthCommand,
   InitiateAuthCommandInput,
 } from "@aws-sdk/client-cognito-identity-provider";
@@ -11,18 +11,6 @@ import {
 const cognitoClient = new CognitoIdentityProviderClient({
   region: process.env.AWS_COGNITO_REGION,
 });
-
-async function isAccessTokenValid(token: string) {
-  const input = {
-    AccessToken: token,
-  };
-  try {
-    const response = await cognitoClient.send(new GetUserCommand(input));
-    return response.Username ? true : false;
-  } catch (e) {
-    return false;
-  }
-}
 
 async function authRefreshToken(token: string) {
   const input: InitiateAuthCommandInput = {
@@ -60,6 +48,7 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/static") || // exclude static files
     /\.(.*)$/.test(request.nextUrl.pathname) // exclude all files in the public folder
   ) {
+    console.log("Middleware passing");
     return NextResponse.next();
   }
 
@@ -73,7 +62,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (accessToken && (await isAccessTokenValid(accessToken))) {
+  if (accessToken && (await isAccessTokenValid(cognitoClient, accessToken))) {
     return authenticatedRedirect(request);
   }
   console.log("access token failed");
