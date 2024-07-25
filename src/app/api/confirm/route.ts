@@ -9,7 +9,7 @@ const cognitoClient = new CognitoIdentityProviderClient({
   region: "us-east-1",
 });
 
-export async function POST(request: Request) {
+export async function handler(request: Request) {
   const req = await request.json();
   console.log("Confirming", req);
   const input = {
