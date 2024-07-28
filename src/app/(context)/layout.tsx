@@ -2,28 +2,15 @@
 
 import { UserDataContext } from "@/utils/Contexts";
 import DebugButton from "@/utils/DebugButton";
+import { UserData } from "@/utils/Types";
 import { useEffect, useState } from "react";
-
-interface UserData {
-  _id: string;
-  email: string;
-  displayName: string;
-  isDarkMode: boolean;
-  categories: {
-    color: string;
-    icon: string;
-    title: string;
-    id: number;
-  }[];
-  userId: string;
-}
 
 export default function ContextLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [userData, setUserData] = useState<UserData>({});
+  const [userData, setUserData] = useState<UserData>({} as UserData);
   const [userDataRefresh, setUserDataRefresh] = useState(0);
 
   function refreshUserData() {
