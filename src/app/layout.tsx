@@ -28,11 +28,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/icon?family=Material+Icons"
         />
       </head>
-      <body className={inter.className}>
-        {children}
-
-        <DebugButton />
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }

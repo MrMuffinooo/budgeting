@@ -3,7 +3,7 @@
 import "dayjs/locale/pl";
 import styles from "./page.module.scss";
 import InputAdornment from "@mui/material/InputAdornment";
-import { FormEvent, useState } from "react";
+import { FormEvent, useContext, useState } from "react";
 import TextField from "@mui/material/TextField";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -13,15 +13,18 @@ import { useRouter } from "next/navigation";
 import Button from "@mui/material/Button";
 
 import ListedCategories from "@/components/ListedCategories";
+import { UserDataContext } from "@/utils/Contexts";
 
 export default function AddExpence({}) {
   const [amount, setAmount] = useState(0);
   const [amountVisible, setAmountVisible] = useState("");
   const [amountHelperText, setAmountHelperText] = useState("");
   const [comment, setComment] = useState("");
-  const router = useRouter();
-
   const [isLoading, setIsLoading] = useState(false);
+
+  const userData = useContext(UserDataContext);
+
+  const router = useRouter();
 
   function isCommaFirst(a: string) {
     if (!a.match(/,/)) return false;
@@ -111,7 +114,7 @@ export default function AddExpence({}) {
             <div>
               <p>Category</p>
               <div className={styles.icons_container}>
-                <ListedCategories isEdit />
+                <ListedCategories isEdit icons={userData.data.categories} />
               </div>
             </div>
             <div>

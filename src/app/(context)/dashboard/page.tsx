@@ -10,26 +10,11 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import AsideFilter from "@/components/AsideFilter";
 import AddFAB from "@/components/AddFAB";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { UserDataContext } from "@/utils/Contexts";
 
 export default function Dashboard() {
-  const [userData, setUserData] = useState(null);
-
-  useEffect(() => {
-    async function fetchUserData() {
-      console.log("fetching...");
-      const response = await fetch("/api/userData", {
-        method: "GET",
-      });
-      const json = await response.json();
-      console.log(json);
-      setUserData(json);
-    }
-
-    if (!userData) {
-      fetchUserData();
-    }
-  }, []);
+  const userData = useContext(UserDataContext);
 
   return (
     <main className={styles.main}>

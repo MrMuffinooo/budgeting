@@ -1,14 +1,14 @@
 "use client";
+
+import { useContext } from "react";
+import { UserDataContext } from "./Contexts";
+
 function DebugButton() {
+  const userData = useContext(UserDataContext);
   async function debug() {
     console.log("\\\\\\\\\\\\\\\\\\ debug");
 
-    console.log("fetching...");
-    const response = await fetch("/api/userData", {
-      method: "GET",
-    });
-    const json = await response.json();
-    console.log(json);
+    console.log(userData);
 
     console.log("///////// debug");
   }
