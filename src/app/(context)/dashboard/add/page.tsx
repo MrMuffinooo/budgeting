@@ -25,7 +25,6 @@ export default function AddExpence({}) {
   const [category, setCategory] = useState<number | null>(null);
 
   const userData = useContext(UserDataContext);
-  const categoryRef = useRef<React.JSX.Element>(null);
 
   const router = useRouter();
 
@@ -75,6 +74,10 @@ export default function AddExpence({}) {
     }
   }
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    if (amountHelperText || !category || !dayjs(expenceDate).isValid()) {
+      return false; //todo: error
+    }
+
     setIsLoading(true);
     event.preventDefault();
 
@@ -84,7 +87,7 @@ export default function AddExpence({}) {
       body: JSON.stringify({
         category: userData.data.categories[category].icon,
         date: expenceDate,
-        amount: amountVisible,
+        amount: amount,
         note: comment,
       }),
     });
@@ -92,7 +95,7 @@ export default function AddExpence({}) {
     if (response.ok) {
       router.push("/dashboard");
     } else {
-      console.error("add error");
+      console.error("add error"); //todo
     }
 
     setIsLoading(false);
