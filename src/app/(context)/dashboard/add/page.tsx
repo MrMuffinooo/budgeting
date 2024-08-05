@@ -3,12 +3,12 @@
 import "dayjs/locale/pl";
 import styles from "./page.module.scss";
 import InputAdornment from "@mui/material/InputAdornment";
-import { FormEvent, useContext, useState } from "react";
+import { FormEvent, useContext, useRef, useState } from "react";
 import TextField from "@mui/material/TextField";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/navigation";
 import Button from "@mui/material/Button";
 
@@ -21,8 +21,11 @@ export default function AddExpence({}) {
   const [amountHelperText, setAmountHelperText] = useState("");
   const [comment, setComment] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [expenceDate, setExpenceDate] = useState<Dayjs | null>(dayjs());
+  const [category, setCategory] = useState<number | null>(null);
 
   const userData = useContext(UserDataContext);
+  const categoryRef = useRef<React.JSX.Element>(null);
 
   const router = useRouter();
 
@@ -77,6 +80,13 @@ export default function AddExpence({}) {
 
     const response = await fetch("/api/addItem", {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        category: userData.data.categories[category].icon,
+        date: expenceDate,
+        amount: amountVisible,
+        note: comment,
+      }),
     });
     console.log(response);
     if (response.ok) {
@@ -114,7 +124,12 @@ export default function AddExpence({}) {
             <div>
               <p>Category</p>
               <div className={styles.icons_container}>
-                <ListedCategories isEdit icons={userData.data.categories} />
+                <ListedCategories
+                  isEdit
+                  icons={userData.data.categories}
+                  category={category}
+                  setCategory={setCategory}
+                />
               </div>
             </div>
             <div>
@@ -126,10 +141,11 @@ export default function AddExpence({}) {
                 adapterLocale="pl"
               >
                 <DatePicker
-                  defaultValue={dayjs()}
                   slotProps={{
                     field: { className: styles.date_picker },
                   }}
+                  value={expenceDate}
+                  onChange={(newValue) => setExpenceDate(newValue)}
                 />
               </LocalizationProvider>
             </div>

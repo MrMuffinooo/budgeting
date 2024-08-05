@@ -12,15 +12,17 @@ interface props {
     title: string;
   }[];
   isEdit?: boolean;
+  category: number | null;
+  setCategory: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 function ListedCategories({
   fontSize = 64,
   icons = CATEGORIES,
   isEdit = false,
+  category = null,
+  setCategory,
 }: props) {
-  const [category, setCategory] = useState<number | null>(null);
-
   const list = icons.map((cat, index) => {
     return (
       <div key={index} onClick={() => setCategory(index)}>
